@@ -7,7 +7,7 @@
 &pinctrl {
 	i2s0_default: i2s0_default {
 		group1 {
-			psels = <NRF_PSEL(I2S_MCK, 1, 16)>;
+			// psels = <NRF_PSEL(I2S_MCK, 1, X)>;
 			nordic,drive-mode = <NRF_DRIVE_H0H1>;
 		};
 		group2 {
@@ -20,7 +20,7 @@
 
 	i2s0_sleep: i2s0_sleep {
 		group1 {
-			psels = <NRF_PSEL(I2S_MCK, 1, 16)>,
+			psels = // <NRF_PSEL(I2S_MCK, 1, X)>,
 				<NRF_PSEL(I2S_SCK_M, 1, 14)>,
 				<NRF_PSEL(I2S_LRCK_M, 1, 15)>,
 				<NRF_PSEL(I2S_SDOUT, 1, 13)>,
