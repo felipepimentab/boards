@@ -71,7 +71,7 @@
     compatible = "gpio-leds";
     pd: pd {
       gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
-      label = "!PD";
+      label = "!PD"; // Power Down
     };
     ext_clk: ext_clk {
       gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
@@ -170,10 +170,10 @@
   zephyr,concat-buf-size = <4092>;
   zephyr,flash-buf-max-size = <4092>;
 
-  adau_1787: adau_1787@28 {
+  adau_1787: adau_1787@2B {
     compatible = "adi,adau1787", "i2c-device";
     status = "okay";
-    reg = <0x28>;
+    reg = <0x2B>;
     label = "adau1787";
   };
 
