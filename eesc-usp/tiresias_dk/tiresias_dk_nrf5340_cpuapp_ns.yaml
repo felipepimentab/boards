@@ -15,5 +15,5 @@ supported:
   - pwm
   - watchdog
   - usb_device
-vendor: nordic
+vendor: eesc-usp
 sysbuild: true

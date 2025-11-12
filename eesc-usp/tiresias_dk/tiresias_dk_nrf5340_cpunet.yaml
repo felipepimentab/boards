@@ -10,4 +10,4 @@ ram: 64
 flash: 256
 supported:
   - watchdog
-vendor: nordic
+vendor: eesc-usp
