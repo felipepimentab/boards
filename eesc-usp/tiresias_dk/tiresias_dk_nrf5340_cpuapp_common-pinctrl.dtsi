@@ -7,24 +7,24 @@
 &pinctrl {
 	i2s0_default: i2s0_default {
 		group1 {
-			psels = <NRF_PSEL(I2S_MCK, 0, 12)>;
+			psels = <NRF_PSEL(I2S_MCK, 1, 16)>;
 			nordic,drive-mode = <NRF_DRIVE_H0H1>;
 		};
 		group2 {
-			psels = <NRF_PSEL(I2S_SCK_M, 0, 14)>,
-				<NRF_PSEL(I2S_LRCK_M, 0, 16)>,
-				<NRF_PSEL(I2S_SDOUT, 0, 13)>,
-				<NRF_PSEL(I2S_SDIN, 0, 15)>;
+			psels = <NRF_PSEL(I2S_SCK_M, 1, 14)>,
+				<NRF_PSEL(I2S_LRCK_M, 1, 15)>,
+				<NRF_PSEL(I2S_SDOUT, 1, 13)>,
+				<NRF_PSEL(I2S_SDIN, 1, 12)>;
 		};
 	};
 
 	i2s0_sleep: i2s0_sleep {
 		group1 {
-			psels = <NRF_PSEL(I2S_MCK, 0, 12)>,
-				<NRF_PSEL(I2S_SCK_M, 0, 14)>,
-				<NRF_PSEL(I2S_LRCK_M, 0, 16)>,
-				<NRF_PSEL(I2S_SDOUT, 0, 13)>,
-				<NRF_PSEL(I2S_SDIN, 0, 15)>;
+			psels = <NRF_PSEL(I2S_MCK, 1, 16)>,
+				<NRF_PSEL(I2S_SCK_M, 1, 14)>,
+				<NRF_PSEL(I2S_LRCK_M, 1, 15)>,
+				<NRF_PSEL(I2S_SDOUT, 1, 13)>,
+				<NRF_PSEL(I2S_SDIN, 1, 12)>;
 			low-power-enable;
 		};
 	};
@@ -88,23 +88,6 @@
 		};
 	};
 
-	pwm0_default: pwm0_default {
-		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 0, 7)>,
-				<NRF_PSEL(PWM_OUT1, 0, 25)>,
-				<NRF_PSEL(PWM_OUT2, 0, 26)>;
-		};
-	};
-
-	pwm0_sleep: pwm0_sleep {
-		group1 {
-			psels = <NRF_PSEL(PWM_OUT0, 0, 7)>,
-				<NRF_PSEL(PWM_OUT1, 0, 25)>,
-				<NRF_PSEL(PWM_OUT2, 0, 26)>;
-			low-power-enable;
-		};
-	};
-
 	spi4_default: spi4_default {
 		group1 {
 			psels = <NRF_PSEL(SPIM_SCK, 0, 8)>,
@@ -124,6 +107,30 @@
 			psels = <NRF_PSEL(SPIM_SCK, 0, 8)>,
 				<NRF_PSEL(SPIM_MISO, 0, 10)>,
 				<NRF_PSEL(SPIM_MOSI, 0, 9)>;
+			low-power-enable;
+		};
+	};
+
+	/* QSPI pin configuration for external flash */
+	qspi_default: qspi_default {
+		group1 {
+			psels = <NRF_PSEL(QSPI_SCK, 0, 17)>,
+				<NRF_PSEL(QSPI_CSN, 0, 18)>,
+				<NRF_PSEL(QSPI_IO0, 0, 13)>,
+				<NRF_PSEL(QSPI_IO1, 0, 14)>,
+				<NRF_PSEL(QSPI_IO2, 0, 15)>,
+				<NRF_PSEL(QSPI_IO3, 0, 16)>;
+		};
+	};
+
+	qspi_sleep: qspi_sleep {
+		group1 {
+			psels = <NRF_PSEL(QSPI_SCK, 0, 17)>,
+				<NRF_PSEL(QSPI_CSN, 0, 18)>,
+				<NRF_PSEL(QSPI_IO0, 0, 13)>,
+				<NRF_PSEL(QSPI_IO1, 0, 14)>,
+				<NRF_PSEL(QSPI_IO2, 0, 15)>,
+				<NRF_PSEL(QSPI_IO3, 0, 16)>;
 			low-power-enable;
 		};
 	};

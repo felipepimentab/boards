@@ -9,18 +9,28 @@
 #include "tiresias_dk_nrf5340_cpuapp_common.dtsi"
 
 / {
-	model = "Nordic Tiresias DK NRF5340 Application";
-	compatible = "nordic,tiresias-dk-nrf5340-cpuapp";
+  model = "Nordic Tiresias DK NRF5340 Application";
+  compatible = "nordic,tiresias-dk-nrf5340-cpuapp";
 
-	chosen {
-		zephyr,sram = &sram0_image;
-		zephyr,flash = &flash0;
-		zephyr,code-partition = &slot0_partition;
-		zephyr,sram-secure-partition = &sram0_s;
-		zephyr,sram-non-secure-partition = &sram0_ns;
-	};
+  chosen {
+    zephyr,sram = &sram0_image;
+    zephyr,flash = &flash0;
+    zephyr,code-partition = &slot0_partition;
+    zephyr,sram-secure-partition = &sram0_s;
+    zephyr,sram-non-secure-partition = &sram0_ns;
+  };
 };
 
 &uicr {
-	nfct-pins-as-gpios;
+  nfct-pins-as-gpios;
+};
+
+&ext_flash {
+  partitions {
+    compatible = "fixed-partitions";
+    #address-cells = <1>;
+    #size-cells = <1>;
+  };
+
+  sck-frequency = <16000000>;
 };

@@ -25,17 +25,6 @@
 		};
 	};
 
-	arduino_adc: analog-connector {
-		compatible = "arduino,uno-adc";
-		#io-channel-cells = <1>;
-		io-channel-map = <0 &adc 1>,	/* A0 = P0.4 = AIN1 */
-				 <1 &adc 2>,	/* A1 = P0.5 = AIN2 */
-				 <2 &adc 4>,	/* A2 = P0.6 = AIN4 */
-				 <3 &adc 5>,	/* A3 = P0.7 = AIN5 */
-				 <4 &adc 6>,	/* A4 = P0.25 = AIN6 */
-				 <5 &adc 7>;	/* A5 = P0.26 = AIN7 */
-	};
-
 	pmic {
 		compatible = "nordic,npm1100";
 		nordic,iset-gpios = <&gpio0 23 GPIO_ACTIVE_HIGH>;
@@ -49,27 +38,46 @@
 		power-gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
 	};
 
-	pwmleds {
-		compatible = "pwm-leds";
-		rgb1_red_pwm_led: pwm_led_0 {
-			pwms = <&pwm0 0 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		};
-		rgb1_green_pwm_led: pwm_led_1 {
-			pwms = <&pwm0 1 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		};
-		rgb1_blue_pwm_led: pwm_led_2 {
-			pwms = <&pwm0 2 PWM_MSEC(20) PWM_POLARITY_NORMAL>;
-		};
-	};
+  bat_mon: bat_mon {
+    compatible = "voltage-divider";
+    io-channels = <&adc 1>;
+    output-ohms = <20000>;
+    full-ohms = <47000>;
+    power-gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
+    label = "BAT_MON_EN";
+  };
 
-	aliases {
-		pwm-led0 = &rgb1_red_pwm_led;
-		pwm-led1 = &rgb1_green_pwm_led;
-		pwm-led2 = &rgb1_blue_pwm_led;
-		red-pwm-led = &rgb1_red_pwm_led;
-		green-pwm-led = &rgb1_green_pwm_led;
-		blue-pwm-led = &rgb1_blue_pwm_led;
-	};
+  adau_ctrl {
+    compatible = "gpio-leds";
+    mp3: mp3 {
+      gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+      label = "MP3";
+    };
+    mp4: mp4 {
+      gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+      label = "MP4";
+    };
+    mp6: mp6 {
+      gpios = <&gpio0 4 GPIO_ACTIVE_HIGH>;
+      label = "MP6";
+    };
+    mp5: mp5 {
+      gpios = <&gpio0 5 GPIO_ACTIVE_HIGH>;
+      label = "MP5";
+    };
+  };
+
+  adau_misc {
+    compatible = "gpio-leds";
+    pd: pd {
+      gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
+      label = "!PD";
+    };
+    ext_clk: ext_clk {
+      gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+      label = "EXT_CLK";
+    };
+  };
 };
 
 &vregmain {
@@ -100,6 +108,17 @@
 		zephyr,reference = "ADC_REF_VDD_1_4";
 		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
 		zephyr,input-positive = <NRF_SAADC_AIN6>;
+		zephyr,resolution = <12>;
+		zephyr,oversampling = <8>;
+	};
+
+	/* BAT_MON on P0.28 (AIN4) */
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1_4";
+		zephyr,reference = "ADC_REF_VDD_1_4";
+		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)>;
+		zephyr,input-positive = <NRF_SAADC_AIN4>;
 		zephyr,resolution = <12>;
 		zephyr,oversampling = <8>;
 	};
@@ -140,102 +159,31 @@
 	pinctrl-names = "default", "sleep";
 };
 
-arduino_serial: &uart1 {
-	compatible = "nordic,nrf-uarte";
-	current-speed = <115200>;
-	pinctrl-0 = <&uart1_default>;
-	pinctrl-1 = <&uart1_sleep>;
-	pinctrl-names = "default", "sleep";
-};
+&i2c1 {
+  status = "okay";
+  compatible = "nordic,nrf-twim";
+  label = "I2C_1";
+  pinctrl-0 = <&i2c1_default>;
+  pinctrl-1 = <&i2c1_sleep>;
+  pinctrl-names = "default", "sleep";
+  clock-frequency = <I2C_BITRATE_STANDARD>;
+  zephyr,concat-buf-size = <4092>;
+  zephyr,flash-buf-max-size = <4092>;
 
-arduino_i2c: &i2c1 {
-	compatible = "nordic,nrf-twim";
-	status = "okay";
-	pinctrl-0 = <&i2c1_default>;
-	pinctrl-1 = <&i2c1_sleep>;
-	pinctrl-names = "default", "sleep";
+  adau_1787: adau_1787@28 {
+    compatible = "adi,adau1787", "i2c-device";
+    status = "okay";
+    reg = <0x28>;
+    label = "adau1787";
+  };
 
-	vbat_sensor: ina231@44 {
-		compatible = "ti,ina230";
-		reg = <0x44>;
-		adc-mode = "Bus and shunt voltage continuous";
-		vbus-conversion-time-us = <4156>;
-		vshunt-conversion-time-us = <4156>;
-		avg-count = <1024>;
-		current-lsb-microamps = <1>;
-		rshunt-micro-ohms = <510000>;
-	};
-
-	vdd1_codec_sensor: ina231@45 {
-		compatible = "ti,ina230";
-		reg = <0x45>;
-		adc-mode = "Bus and shunt voltage continuous";
-		vbus-conversion-time-us = <4156>;
-		vshunt-conversion-time-us = <4156>;
-		avg-count = <1024>;
-		current-lsb-microamps = <1>;
-		rshunt-micro-ohms = <2200000>;
-	};
-
-	vdd2_codec_sensor: ina231@41 {
-		compatible = "ti,ina230";
-		reg = <0x41>;
-		adc-mode = "Bus and shunt voltage continuous";
-		vbus-conversion-time-us = <4156>;
-		vshunt-conversion-time-us = <4156>;
-		avg-count = <1024>;
-		current-lsb-microamps = <1>;
-		rshunt-micro-ohms = <2200000>;
-	};
-
-	vdd2_nrf_sensor: ina231@40 {
-		compatible = "ti,ina230";
-		reg = <0x40>;
-		adc-mode = "Bus and shunt voltage continuous";
-		vbus-conversion-time-us = <4156>;
-		vshunt-conversion-time-us = <4156>;
-		avg-count = <1024>;
-		current-lsb-microamps = <1>;
-		rshunt-micro-ohms = <1000000>;
-	};
-};
-
-arduino_spi: &spi4 {
-	compatible = "nordic,nrf-spim";
-	status = "okay";
-	cs-gpios = <&arduino_header 16 GPIO_ACTIVE_LOW>,
-		<&gpio0 11 GPIO_ACTIVE_LOW>, <&gpio0 17 GPIO_ACTIVE_LOW>;
-	pinctrl-0 = <&spi4_default>;
-	pinctrl-1 = <&spi4_sleep>;
-	pinctrl-names = "default", "sleep";
-	sdhc0: sdhc@1 {
-		compatible = "zephyr,sdhc-spi-slot";
-		reg = <1>;
-		status = "okay";
-		sdmmc {
-			compatible = "zephyr,sdmmc-disk";
-			disk-name = "SD";
-			status = "okay";
-		};
-
-		spi-max-frequency = <8000000>;
-	};
-
-	cs47l63: cs47l63@2 {
-		compatible = "cirrus,cs47l63";
-		reg = <2>;
-		spi-max-frequency = <8000000>;
-		irq-gpios = <&gpio0 19 GPIO_ACTIVE_LOW>;
-		reset-gpios = <&gpio0 18 GPIO_ACTIVE_LOW>;
-		gpio9-gpios = <&gpio0 20 GPIO_ACTIVE_LOW>;
-	};
-};
-
-&pwm0 {
-	status = "okay";
-	pinctrl-0 = <&pwm0_default>;
-	pinctrl-1 = <&pwm0_sleep>;
-	pinctrl-names = "default", "sleep";
+  bmi270: bmi270@68 {
+    compatible = "bosch,bmi270";
+    status = "okay";
+    reg = <0x68>;
+    label = "bmi270";
+    irq-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>, <&gpio0 3 GPIO_ACTIVE_HIGH>;
+  };
 };
 
 zephyr_udc0: &usbd {
@@ -252,6 +200,25 @@ zephyr_udc0: &usbd {
 		hp-channel-l;
 		hp-channel-r;
 	};
+};
+
+&qspi {
+  status = "okay";
+  pinctrl-0 = <&qspi_default>;
+  pinctrl-1 = <&qspi_sleep>;
+  pinctrl-names = "default", "sleep";
+
+  ext_flash: flash@0 {
+    compatible = "nordic,qspi-nor";
+    reg = <0>;
+    label = "MX25R16";
+    sck-frequency = <16000000>;
+    size = <0x200000>; // 2 MiB = 16 Mbit
+    readoc = "read4io";
+    writeoc = "pp4io";
+    quad-enable-requirements = "NONE";
+    jedec-id = [c2 28 15];
+  };
 };
 
 /* Include default memory partition configuration file */
