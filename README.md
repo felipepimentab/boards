@@ -8,6 +8,20 @@ This repository contains the board files for the board used in the Tiresias Proj
 
 The complete design files for the **Tiresias Hearing Aid Development Board** (Tiresias DK) can be found on its [GitHub Repository](https://github.com/joaocolombari/Tiresias_HW).
 
+### ADAU1787 devicetree binding
+
+The Tiresias DK devicetree declares its onboard ADAU1787 with the
+`adi,adau1787` compatible. Any application built for this target must provide a
+matching binding at `dts/bindings/audio/adi,adau1787.yaml`; the board files do
+not install the binding because its schema and driver-facing interface belong to
+the application or to a reusable Zephyr module.
+
+A sample binding is available at
+`eesc-usp/tiresias_dk/samples/dts/bindings/audio/adi,adau1787.yaml`. Copy it into
+the application's `dts/bindings/audio` directory and adapt it if the application
+uses a different ADAU1787 interface. The MP3 through MP6 GPIO properties are
+optional; applications must check that each property exists before using it.
+
 ![Board Assembly](board-pins.png)
 
 ### Firmware Pin and IO Map
